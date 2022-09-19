@@ -1,9 +1,7 @@
 package hiber.dao;
 
 import hiber.model.User;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,24 +22,20 @@ public class UserDaoImp implements UserDao {
    }
 
    @Override
-   public List <User> getUsersByCarModelAndSeries(String model, int series) {
-      Transaction transaction = null;
-      List<User> list = null;
-      try (Session session = sessionFactory.openSession()) {
-         transaction = session.beginTransaction();
-         Query query = session.createQuery("FROM User as u INNER JOIN FETCH u.car where u.car.model = :model and u.car.series = :series ");
-         query.setParameter("model", model);
-         query.setParameter("series", series);
-         list = query.getResultList();
-         transaction.commit();
-      } catch (Exception e) {
-         if (transaction != null) {
-            transaction.rollback();
-         }
-      }
-      return list;
+   public List<hiber.model.User> getUsersByCarModelAndSeries(String model, int series) {
+      return null;
    }
 
+   @Override
+   @SuppressWarnings("unchecked")
+   public User getUserByCarModelAndSeries(String model, int series) {
+      String hql = "from User u where u.car.model = :model and u.car.series = :series ";
+      Query query = sessionFactory.getCurrentSession().createQuery(hql);
+      query.setParameter("model", model);
+      query.setParameter("series", series);
+      User user = (User) query.getSingleResult();
+      return user;
+   }
 
    @Override
    @SuppressWarnings("unchecked")
